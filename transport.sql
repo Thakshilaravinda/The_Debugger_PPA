@@ -1,0 +1,27 @@
+
+CREATE DATABASE IF NOT EXISTS transport;
+USE transport;
+
+CREATE TABLE IF NOT EXISTS drivers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    info TEXT
+);
+
+CREATE TABLE IF NOT EXISTS vehicles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    info TEXT
+);
+
+CREATE TABLE IF NOT EXISTS routes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    info TEXT
+);
+
+CREATE TABLE IF NOT EXISTS fuels (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    info TEXT
+);
