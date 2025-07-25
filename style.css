@@ -1,0 +1,70 @@
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #1e1e1e;
+  color: white;
+}
+
+.sidebar {
+  width: 200px;
+  background: #333;
+  position: fixed;
+  height: 100%;
+  padding-top: 20px;
+}
+
+.sidebar h2 {
+  text-align: center;
+  color: #fff;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  padding: 15px;
+  color: white;
+  cursor: pointer;
+}
+
+.sidebar ul li:hover {
+  background: #ff4b5c;
+}
+
+.content {
+  margin-left: 200px;
+  padding: 20px;
+}
+
+.tab {
+  display: none;
+}
+
+.tab.active {
+  display: block;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+form input, form button {
+  padding: 10px;
+  margin: 5px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background-color: #2e2e2e;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #444;
+  text-align: left;
+}
