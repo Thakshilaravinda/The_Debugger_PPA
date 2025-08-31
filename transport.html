@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transport Management</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#1c1c1c; color:#fff; display:flex; }
+.sidebar { width:220px; height:100vh; background:#2c2c2c; display:flex; flex-direction:column; position:fixed; top:0; left:0; padding-top:40px; box-shadow:2px 0 10px rgba(0,0,0,0.6); }
+.sidebar a { color:#ccc; padding:15px 25px; text-decoration:none; display:flex; align-items:center; gap:12px; transition:all 0.3s ease; font-size:16px; border-left:4px solid transparent; }
+.sidebar a.active { background: linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; font-weight:bold; border-left:4px solid #fff; }
+.sidebar a:hover:not(.active) { background-color:#3a3a3a; color:#fff; border-left:4px solid #ff416c; }
+.content { margin-left:220px; padding:40px; flex:1; }
+.content h2 { font-size:32px; margin-bottom:20px; color:#ff416c; }
+button { margin-top:10px; padding:10px 18px; border:none; background: linear-gradient(135deg, #ff416c, #ff4b2b); color:white; font-size:14px; border-radius:8px; cursor:pointer; transition:all 0.3s ease; }
+button:hover { background: linear-gradient(135deg, #ff4b2b, #ff416c); }
+form { background: linear-gradient(145deg,#1e1e1e,#2a2a2a); padding:25px; border-radius:16px; box-shadow:0 8px 20px rgba(0,0,0,0.6); max-width:700px; margin-top:20px; }
+form label { display:block; margin-top:15px; margin-bottom:5px; font-weight:600; color:#ffcccb; font-size:14px; }
+form input, form select { width:100%; padding:10px 14px; border:none; border-radius:10px; margin-bottom:10px; background:#121212; color:#fff; border:1px solid #333; font-size:14px; }
+form input:focus, form select:focus { outline:none; border-color:#ff416c; box-shadow:0 0 5px #ff416c; }
+table { width:100%; border-collapse:collapse; margin-top:20px; }
+th, td { border:1px solid #444; padding:10px; text-align:left; font-size:14px; }
+th { background:#2c2c2c; color:#ff416c; }
+td { background:#1e1e1e; }
+.action-btn { padding:5px 8px; margin-right:5px; border:none; border-radius:6px; cursor:pointer; font-size:13px; }
+.delete-btn { background:#ff416c; color:#fff; }
+.edit-btn { background:#4caf50; color:#fff; }
+.tab { display:none; }
+.tab.active { display:block; }
+.nav-btn { padding:10px 15px; margin:5px; border:none; border-radius:6px; background:#333; color:#fff; cursor:pointer; }
+.nav-btn:hover { background:#ff416c; }
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; }
+.modal-content { background:#2a2a2a; padding:25px; border-radius:12px; width:320px; max-height:90vh; overflow-y:auto; }
+.modal-content label { margin-bottom:8px; display:block; color:#ccc; }
+.modal-content input, .modal-content select { width:100%; padding:8px; margin-bottom:10px; border-radius:6px; border:1px solid #444; background:#121212; color:#fff; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+    <a href="transport.html" class="active"><i class="fas fa-truck"></i> Transport</a>
+    <a href="transportReport.html"><i class="fas fa-file-alt"></i> Reports</a>
+    <a href="admin.html" class="dashboard">Dashboard</a>
+</div>
+
+<div class="content">
+<h2>Transport Management</h2>
+<div>
+  <button class="nav-btn" onclick="showTab('drivers')">Drivers</button>
+  <button class="nav-btn" onclick="showTab('vehicles')">Vehicles</button>
+  <button class="nav-btn" onclick="showTab('petrol')">Petrol Bills</button>
+  <button class="nav-btn" onclick="showTab('services')">Services</button>
+</div>
+
+<!-- DRIVERS -->
+<div id="drivers" class="tab active">
+<form id="driverForm">
+  <label>Name:  <input type="text" name="name" required></label>
+  <label>Phone: <input type="text" name="phone"></label>
+  <label>License No: <input type="text" name="license_no"></label>
+  <label>Address: <input type="text" name="address"></label>
+  <button type="submit">Add Driver</button>
+</form>
+<table>
+  <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>License</th><th>Actions</th></tr></thead>
+  <tbody></tbody>
+</table>
+</div>
+
+<!-- VEHICLES -->
+<div id="vehicles" class="tab">
+<form id="vehicleForm">
+  <label>Registration No: <input type="text" name="registration_no" required></label>
+  <label>Model: <input type="text" name="model"></label>
+  <label>Type: <input type="text" name="type"></label>
+  <label>Capacity: <input type="text" name="capacity"></label>
+  <button type="submit">Add Vehicle</button>
+</form>
+<table>
+  <thead><tr><th>ID</th><th>Reg No</th><th>Model</th><th>Type</th><th>Capacity</th><th>Actions</th></tr></thead>
+  <tbody></tbody>
+</table>
+</div>
+
+<!-- PETROL -->
+<div id="petrol" class="tab">
+<form id="petrolForm">
+  <label>Vehicle:
+    <select name="vehicle_id" id="vehicleSelectPetrol" required></select>
+  </label>
+  <label>Driver:
+    <select name="driver_id" id="driverSelectPetrol" required></select>
+  </label>
+  <label>Date: <input type="date" name="date" required></label>
+  <label>Liters: <input type="number" step="0.01" name="liters"></label>
+  <label>Amount: <input type="number" step="0.01" name="amount"></label>
+  <button type="submit">Add Petrol Bill</button>
+</form>
+<table>
+  <thead><tr><th>ID</th><th>Vehicle</th><th>Driver</th><th>Date</th><th>Liters</th><th>Amount</th><th>Actions</th></tr></thead>
+  <tbody></tbody>
+</table>
+</div>
+
+<!-- SERVICES -->
+<div id="services" class="tab">
+<form id="serviceForm">
+  <label>Vehicle:
+    <select name="vehicle_id" id="vehicleSelectService" required></select>
+  </label>
+  <label>Service Type: <input type="text" name="service_type"></label>
+  <label>Service Date: <input type="date" name="service_date"></label>
+  <label>Cost: <input type="number" step="0.01" name="cost"></label>
+  <label>Notes: <input type="text" name="notes"></label>
+  <button type="submit">Add Service</button>
+</form>
+<table>
+  <thead><tr><th>ID</th><th>Vehicle</th><th>Type</th><th>Date</th><th>Cost</th><th>Notes</th><th>Actions</th></tr></thead>
+  <tbody></tbody>
+</table>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <h3>Edit Record</h3>
+    <form id="editForm"></form>
+    <button type="button" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+// TAB SWITCH
+function showTab(tabId){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+}
+
+// FETCH JSON
+async function fetchJSON(url){ return fetch(url).then(r=>r.json()); }
+
+// POPULATE SELECTS
+async function populateSelects(){
+  const vehicles = await fetchJSON('vehicles.php');
+  const drivers = await fetchJSON('drivers.php');
+  document.getElementById('vehicleSelectPetrol').innerHTML = '<option value="">Select Vehicle</option>' + vehicles.map(v=>`<option value="${v.vehicle_id}">${v.registration_no} - ${v.model}</option>`).join('');
+  document.getElementById('vehicleSelectService').innerHTML = '<option value="">Select Vehicle</option>' + vehicles.map(v=>`<option value="${v.vehicle_id}">${v.registration_no} - ${v.model}</option>`).join('');
+  document.getElementById('driverSelectPetrol').innerHTML = '<option value="">Select Driver</option>' + drivers.map(d=>`<option value="${d.driver_id}">${d.name}</option>`).join('');
+}
+
+// LOAD TABLES
+async function loadDrivers(){ 
+  const tbody=document.querySelector('#drivers tbody'); tbody.innerHTML='';
+  (await fetchJSON('drivers.php')).forEach(d=>{
+    tbody.innerHTML+=`<tr><td>${d.driver_id}</td><td>${d.name}</td><td>${d.phone}</td><td>${d.license_no}</td>
+    <td><button class="edit-btn" onclick="editRecord('drivers',${d.driver_id})">Edit</button>
+        <button class="delete-btn" onclick="deleteDriver(${d.driver_id})">Delete</button></td></tr>`;
+  });
+}
+
+async function loadVehicles(){ 
+  const tbody=document.querySelector('#vehicles tbody'); tbody.innerHTML='';
+  (await fetchJSON('vehicles.php')).forEach(v=>{
+    tbody.innerHTML+=`<tr><td>${v.vehicle_id}</td><td>${v.registration_no}</td><td>${v.model}</td><td>${v.type}</td><td>${v.capacity}</td>
+    <td><button class="edit-btn" onclick="editRecord('vehicles',${v.vehicle_id})">Edit</button>
+        <button class="delete-btn" onclick="deleteVehicle(${v.vehicle_id})">Delete</button></td></tr>`;
+  });
+}
+
+async function loadPetrol(){ 
+  const tbody=document.querySelector('#petrol table tbody'); tbody.innerHTML='';
+  (await fetchJSON('petrol.php')).forEach(p=>{
+    tbody.innerHTML+=`<tr><td>${p.bill_id}</td><td>${p.vehicle_id}</td><td>${p.driver_id}</td><td>${p.date}</td><td>${p.liters}</td><td>${p.amount}</td>
+    <td><button class="edit-btn" onclick="editRecord('petrol',${p.bill_id})">Edit</button>
+        <button class="delete-btn" onclick="deletePetrol(${p.bill_id})">Delete</button></td></tr>`;
+  });
+}
+
+async function loadServices(){ 
+  const tbody=document.querySelector('#services table tbody'); tbody.innerHTML='';
+  (await fetchJSON('services.php')).forEach(s=>{
+    tbody.innerHTML+=`<tr><td>${s.service_id}</td><td>${s.vehicle_id}</td><td>${s.service_type}</td><td>${s.service_date}</td><td>${s.cost}</td><td>${s.notes}</td>
+    <td><button class="edit-btn" onclick="editRecord('services',${s.service_id})">Edit</button>
+        <button class="delete-btn" onclick="deleteService(${s.service_id})">Delete</button></td></tr>`;
+  });
+}
+
+// FORM SUBMISSIONS
+document.getElementById('driverForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  await fetch('add_driver.php',{method:'POST',body:new FormData(e.target)});
+  e.target.reset(); loadDrivers(); populateSelects();
+});
+
+document.getElementById('vehicleForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  await fetch('add_vehicle.php',{method:'POST',body:new FormData(e.target)});
+  e.target.reset(); loadVehicles(); populateSelects();
+});
+
+document.getElementById('petrolForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const res = await fetch('add_petrol.php',{method:'POST',body:new FormData(e.target)});
+  const data = await res.json();
+  if(data.status==='success'){ e.target.reset(); loadPetrol(); } else alert('Error: '+data.error);
+});
+
+document.getElementById('serviceForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const res = await fetch('add_services.php',{method:'POST',body:new FormData(e.target)});
+  const data = await res.json();
+  if(data.status==='success'){ e.target.reset(); loadServices(); } else alert('Error: '+data.error);
+});
+
+// DELETE FUNCTIONS
+function deleteDriver(id){ fetch('delete_driver.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`id=${id}`}).then(()=>{loadDrivers(); populateSelects();}); }
+function deleteVehicle(id){ fetch('delete_vehicle.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`id=${id}`}).then(()=>{loadVehicles(); populateSelects();}); }
+function deletePetrol(id){ fetch('delete_petrol.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`id=${id}`}).then(()=>loadPetrol()); }
+function deleteService(id){ fetch('delete_service.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`id=${id}`}).then(()=>loadServices()); }
+
+// EDIT MODAL
+const editModal=document.getElementById('editModal');
+const editForm=document.getElementById('editForm');
+
+function closeModal(){ editModal.style.display='none'; editForm.innerHTML=''; }
+
+async function editRecord(table,id){
+  editModal.style.display='flex';
+  editForm.innerHTML='<p>Loading...</p>';
+  const data=await fetchJSON(`${table}.php?id=${id}`);
+  editForm.innerHTML='';
+  editForm.innerHTML+=`<input type="hidden" name="id" value="${id}">`;
+  for(const key in data){
+    if(key!=='id'){
+      editForm.innerHTML+=`<label>${key.charAt(0).toUpperCase()+key.slice(1)}:<input name="${key}" value="${data[key]}"></label>`;
+    }
+  }
+  editForm.innerHTML+=`<button type="submit">Update</button>`;
+  editForm.onsubmit=async e=>{
+    e.preventDefault();
+    const res = await fetch(`update_${table}.php`,{method:'POST',body:new FormData(editForm)});
+    const r = await res.json();
+    if(r.status==='success'){ closeModal(); loadAll(); populateSelects(); } else alert('Error: '+r.error);
+  };
+}
+
+// LOAD ALL
+async function loadAll(){ await loadDrivers(); await loadVehicles(); await loadPetrol(); await loadServices(); }
+
+// INIT
+async function init(){ await populateSelects(); await loadAll(); }
+window.onload=init;
+</script>
+</body>
+</html>
